@@ -64,7 +64,6 @@ def handle_connection(client_socket, client_ip):
         channel.send("Welcome to svr-prod-04\r\n")
 
         session_active = True
-        buffer = ""
 
         while session_active:
             channel.send("root@svr-prod-04:~# ")
@@ -85,14 +84,16 @@ def handle_connection(client_socket, client_ip):
                 channel.send(char)  # echo يوضح الكتابة للمهاجم
 
             command = command.strip()
+
             if not command:
                 continue
 
             logging.info(f"[{client_ip}] CMD: {command}")
 
-            if command in ("exit", "quit", "logout"):
+            if command.lower() in ("exit", "quit", "logout"):
                 channel.send("logout\r\n")
                 session_active = False
+                break
             else:
                 # مؤقتًا: رد ثابت بسيط، هنستبدله بـ LLM في الملف الجاي
                 channel.send(f"bash: {command.split()[0]}: command not found\r\n")
